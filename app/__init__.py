@@ -4,12 +4,25 @@ app/__init__.py
 Flask application factory.
 """
 import os
-from flask import Flask
+from flask import Flask, jsonify
 
 
 def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
+
+    @app.get("/")
+    def index():
+        return jsonify({
+            "message": "Globetrotter API",
+            "available_endpoints": [
+                "/destinations",
+                "/recommendations",
+                "/itineraries",
+                "/register",
+                "/login",
+            ],
+        })
 
     # Secret key used for JWT signing.  Set the SECRET_KEY environment variable
     # in production.  The fallback is intentionally weak and must never be used
