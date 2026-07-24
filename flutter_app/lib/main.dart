@@ -16,9 +16,9 @@ class GlobeTrotterApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: colorScheme,
-        scaffoldBackgroundColor: colorScheme.surfaceVariant,
+        scaffoldBackgroundColor: colorScheme.surfaceContainerHighest,
         appBarTheme: AppBarTheme(
-          color: colorScheme.primary,
+          backgroundColor: colorScheme.primary,
           iconTheme: IconThemeData(color: colorScheme.onPrimary),
           surfaceTintColor: colorScheme.primary,
           titleTextStyle: TextStyle(
@@ -27,16 +27,9 @@ class GlobeTrotterApp extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-        cardTheme: CardTheme(
-          color: colorScheme.surface,
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: colorScheme.surfaceVariant,
+          fillColor: colorScheme.surfaceContainerHighest,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,

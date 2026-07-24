@@ -10,6 +10,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _preferences = <String>{};
   bool _isLoading = false;
@@ -25,11 +26,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     final username = _usernameController.text.trim();
+    final email = _emailController.text.trim();
     final password = _passwordController.text;
 
-    if (username.isEmpty || password.isEmpty) {
+    if (username.isEmpty || email.isEmpty || password.isEmpty) {
       setState(() {
-        _error = 'Please enter both username and password.';
+        _error = 'Please enter username, email, and password.';
       });
       return;
     }
@@ -42,10 +44,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       await AuthService.register(
         username,
+        email,
         password,
         _preferences.toList(),
       );
-      await AuthService.login(username, password);
+      await AuthService.login(email, password);
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
@@ -118,6 +121,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _usernameController,
                       decoration: const InputDecoration(
                         labelText: 'Username',
+                        prefixIcon: Icon(Icons.person),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -125,6 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _passwordController,
                       decoration: const InputDecoration(
                         labelText: 'Password',
+                        prefixIcon: Icon(Icons.lock),
                       ),
                       obscureText: true,
                     ),

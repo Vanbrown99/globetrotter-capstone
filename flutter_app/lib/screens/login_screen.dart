@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:globetrotter_flutter/services/auth_service.dart';
-import 'package:globetrotter_flutter/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,16 +9,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String? _error;
 
   Future<void> _login() async {
-    if (_usernameController.text.trim().isEmpty ||
+    if (_emailController.text.trim().isEmpty ||
         _passwordController.text.isEmpty) {
       setState(() {
-        _error = 'Please enter both username and password.';
+        _error = 'Please enter both email and password.';
       });
       return;
     }
@@ -31,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       await AuthService.login(
-        _usernameController.text.trim(),
+        _emailController.text.trim(),
         _passwordController.text,
       );
       if (!mounted) return;
@@ -49,6 +48,114 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _showForgotPasswordDialog() async {
+    final emailController = TextEditingController();
+    final tokenController = TextEditingController();
+    final passwordController = TextEditingController();
+    bool requestSent = false;
+    bool isSubmitting = false;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text(requestSent ? 'Reset your password' : 'Forgot password'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!requestSent)
+                    TextField(
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        labelText: 'Email address',
+                        prefixIcon: Icon(Icons.email),
+                      ),
+                    )
+                  else ...[
+                    const Text(
+                      'We issued a reset code. Enter it below to choose a new password.',
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: tokenController,
+                      decoration: const InputDecoration(
+                        labelText: 'Reset code',
+                        prefixIcon: Icon(Icons.lock_open),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: passwordController,
+                      decoration: const InputDecoration(
+                        labelText: 'New password',
+                        prefixIcon: Icon(Icons.lock_reset),
+                      ),
+                      obscureText: true,
+                    ),
+                  ],
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSubmitting ? null : () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: isSubmitting
+                      ? null
+                      : () async {
+                          setDialogState(() => isSubmitting = true);
+                          try {
+                            if (!requestSent) {
+                              await AuthService.forgotPassword(emailController.text.trim());
+                              setDialogState(() => requestSent = true);
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Reset code requested. Enter it to change your password.'),
+                                ),
+                              );
+                            } else {
+                              await AuthService.resetPassword(
+                                tokenController.text.trim(),
+                                passwordController.text,
+                              );
+                              if (!mounted) return;
+                              Navigator.of(dialogContext).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Password updated successfully.')),
+                              );
+                            }
+                          } catch (e) {
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+                            );
+                          } finally {
+                            if (mounted) {
+                              setDialogState(() => isSubmitting = false);
+                            }
+                          }
+                        },
+                  child: isSubmitting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(requestSent ? 'Reset password' : 'Send reset code'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -57,8 +164,8 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              colorScheme.primaryContainer.withOpacity(0.95),
-              colorScheme.secondaryContainer.withOpacity(0.95),
+              colorScheme.primaryContainer.withAlpha(240),
+              colorScheme.secondaryContainer.withAlpha(240),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -86,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Travel smarter with personalized Yaoundé recommendations.',
                   style: TextStyle(
                     fontSize: 16,
-                    color: colorScheme.onPrimary.withOpacity(0.9),
+                    color: colorScheme.onPrimary.withAlpha(230),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -98,9 +205,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       children: [
                         TextField(
-                          controller: _usernameController,
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: const InputDecoration(
-                            labelText: 'Username',
+                            labelText: 'Email',
+                            prefixIcon: Icon(Icons.email),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -108,10 +217,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _passwordController,
                           decoration: const InputDecoration(
                             labelText: 'Password',
+                            prefixIcon: Icon(Icons.lock),
                           ),
                           obscureText: true,
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: _isLoading ? null : _showForgotPasswordDialog,
+                            child: const Text('Forgot password?'),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
                         if (_error != null)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),

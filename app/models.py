@@ -11,6 +11,8 @@ All persistent data is stored in JSON files under the /data directory.
 import json
 import os
 
+from werkzeug.security import generate_password_hash
+
 # Resolve the /data directory relative to this file's location so the app
 # works regardless of the current working directory.
 _BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -64,10 +66,29 @@ def get_user_by_username(username: str) -> dict | None:
     return None
 
 
+def get_user_by_email(email: str) -> dict | None:
+    """Return the user dict for *email*, or None if not found."""
+    users = get_all_users()
+    for user in users:
+        if user.get("email") == email:
+            return user
+    return None
+
+
 def save_user(user: dict) -> None:
     """Append *user* to the users store."""
     users = get_all_users()
     users.append(user)
+    _write_json(USERS_FILE, users)
+
+
+def update_user_password(email: str, new_password: str) -> None:
+    """Update the stored password hash for a user identified by email."""
+    users = get_all_users()
+    for user in users:
+        if user.get("email") == email:
+            user["password_hash"] = generate_password_hash(new_password)
+            break
     _write_json(USERS_FILE, users)
 
 

@@ -1,0 +1,22 @@
+name: globetrotter_flutter
+description: A Flutter frontend for the GlobeTrotter Yaoundé API.
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.6
+  flutter_map: ^4.0.0
+  latlong2: ^0.8.0
+  shared_preferences: ^2.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
