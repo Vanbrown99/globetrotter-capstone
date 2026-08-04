@@ -54,7 +54,7 @@ def save_itinerary(itinerary: dict):
 
 # JWT helper (decode only)
 def decode_token(token: str, secret: str):
-    return jwt.decode(token, secret, algorithms=['HS256'])
+    return jwt.decode(token, str(secret), algorithms=['HS256'])
 
 
 def get_current_user(request_obj) -> str | None:
