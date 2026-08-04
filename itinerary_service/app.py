@@ -63,7 +63,9 @@ def get_current_user(request_obj) -> str | None:
         return None
     token = auth_header.split(' ', 1)[1]
     try:
-        payload = decode_token(token, current_app.config.get('SECRET_KEY', 'globetrotter-secret-change-in-prod'))
+        secret = current_app.config.get('SECRET_KEY', 'globetrotter-secret-change-in-prod')
+        print('DEBUG: SECRET_KEY repr:', repr(secret), 'type:', type(secret))
+        payload = decode_token(token, secret)
         return payload.get('sub')
     except jwt.PyJWTError:
         return None
