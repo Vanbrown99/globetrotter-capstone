@@ -8,6 +8,7 @@ import jwt
 from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'globetrotter-secret-change-in-prod')
 
 
 def project_root():
