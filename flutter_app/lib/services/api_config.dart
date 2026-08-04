@@ -8,18 +8,20 @@ class ApiConfig {
       return envUrl;
     }
 
+    // Default to the API Gateway on port 5400. Emulator mapping for Android
+    // uses 10.0.2.2 to reach the host machine.
     if (kIsWeb) {
-      return 'http://localhost:5000';
+      return 'http://127.0.0.1:5400/api';
     }
 
     if (Platform.isAndroid) {
-      return 'http://10.0.2.2:5000';
+      return 'http://10.0.2.2:5400/api';
     }
 
     if (Platform.isIOS) {
-      return 'http://127.0.0.1:5000';
+      return 'http://127.0.0.1:5400/api';
     }
 
-    return 'http://127.0.0.1:5000';
+    return 'http://127.0.0.1:5400/api';
   }
 }
