@@ -21,6 +21,7 @@ def create_app():
                 "/itineraries",
                 "/register",
                 "/login",
+                "/me",
             ],
         })
 

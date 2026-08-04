@@ -125,6 +125,27 @@ def login():
     return jsonify({"token": token, "email": user["email"], "username": user["username"]}), 200
 
 
+@auth_bp.route("/me", methods=["GET"])
+def me():
+    """Return the profile of the currently authenticated user.
+
+    Requires: Authorization: ******
+    """
+    username = get_current_user(request)
+    if not username:
+        return jsonify({"error": "authentication required"}), 401
+
+    user = get_user_by_username(username)
+    if not user:
+        return jsonify({"error": "user not found"}), 404
+
+    return jsonify({
+        "username": user["username"],
+        "email": user["email"],
+        "preferences": user.get("preferences", []),
+    }), 200
+
+
 @auth_bp.route("/forgot-password", methods=["POST"])
 def forgot_password():
     """Issue a password reset token for an existing email address."""

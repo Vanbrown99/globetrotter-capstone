@@ -1,1 +1,3 @@
-include: f
+linter:
+  rules:
+    avoid_print: false

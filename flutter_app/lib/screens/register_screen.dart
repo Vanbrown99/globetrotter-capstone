@@ -83,8 +83,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              colorScheme.secondaryContainer.withOpacity(0.95),
-              colorScheme.primaryContainer.withOpacity(0.95),
+              colorScheme.secondaryContainer.withValues(alpha: 0.95),
+              colorScheme.primaryContainer.withValues(alpha: 0.95),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -113,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Text(
                       'Create a free account to save your favorite Yaoundé destinations.',
                       style: TextStyle(
-                          color: colorScheme.onSurface.withOpacity(0.8)),
+                          color: colorScheme.onSurface.withValues(alpha: 0.8)),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
@@ -159,7 +159,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return FilterChip(
                           label: Text(interest),
                           selected: selected,
-                          selectedColor: colorScheme.primary.withOpacity(0.2),
+                          selectedColor:
+                              colorScheme.primary.withValues(alpha: 0.2),
                           onSelected: (_) => _toggleInterest(interest),
                         );
                       }).toList(),
