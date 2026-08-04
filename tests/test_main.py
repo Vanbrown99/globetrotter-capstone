@@ -19,6 +19,17 @@ def test_root_route_returns_api_info():
     assert "/destinations" in payload["available_endpoints"]
 
 
+def test_api_adds_cors_headers():
+    app = create_app()
+    client = app.test_client()
+
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert response.headers["Access-Control-Allow-Origin"] == "*"
+    assert "Authorization" in response.headers["Access-Control-Allow-Headers"]
+
+
 def test_main_script_starts_without_import_error():
     repo_root = Path(__file__).resolve().parents[1]
     env = os.environ.copy()

@@ -4,12 +4,19 @@ app/__init__.py
 Flask application factory.
 """
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 
 def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
+
+    @app.after_request
+    def add_cors_headers(response):
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        return response
 
     @app.get("/")
     def index():
